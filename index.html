@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>WhatsApp Group Extractor — Cyberpunk</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg-1:#0a0016;
+    --bg-2:#2b003f;
+    --neon-1:#9b3bff;
+    --neon-2:#00f0ff;
+    --accent:#ff00d0;
+    --glass: rgba(255,255,255,0.03);
+  }
+
+  /* Page background gradient + animated diagonal scan */
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family: "Orbitron", Arial, sans-serif;
+    background: radial-gradient(1200px 600px at 10% 10%, rgba(91,0,255,0.12), transparent),
+                linear-gradient(120deg,var(--bg-1) 0%, var(--bg-2) 60%);
+    color:#e9e6ff;
+    overflow-x:hidden;
+  }
+
+  /* floating particles */
+  .particles{
+    position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.12;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(255,255,255,0.04) 0 2px, transparent 3px),
+      radial-gradient(circle at 80% 70%, rgba(255,255,255,0.03) 0 2px, transparent 3px);
+    background-size:100px 100px, 160px 160px;
+    mix-blend-mode: screen;
+  }
+
+  /* subtle scan lines */
+  .scanlines::after{
+    content:"";
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+    background-image: linear-gradient(transparent 90%, rgba(255,255,255,0.02) 100%);
+    background-size:100% 4px;
+    mix-blend-mode: overlay;
+    animation: scan 8s linear infinite;
+    opacity:0.12;
+  }
+  @keyframes scan{ from{transform:translateY(-10%)} to{transform:translateY(10%)} }
+
+  /* container center */
+  .wrap{
+    position:relative;
+    z-index:5;
+    max-width:980px;
+    margin:48px auto;
+    padding:28px;
+    display:grid;
+    grid-template-columns: 1fr 420px;
+    gap:28px;
+    align-items:start;
+  }
+
+  /* cyber card */
+  .card{
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:14px;
+    padding:22px;
+    border: 1px solid rgba(155,59,255,0.12);
+    box-shadow: 0 10px 40px rgba(43,0,63,0.45), 0 0 40px rgba(0,240,255,0.03) inset;
+    position:relative;
+    overflow:hidden;
+    backdrop-filter: blur(6px);
+  }
+
+  /* neon edge */
+  .card::before{
+    content:"";
+    position:absolute; inset:-2px;
+    background: linear-gradient(90deg, rgba(155,59,255,0.12), rgba(0,240,255,0.06));
+    filter: blur(20px);
+    z-index:-1;
+  }
+
+  h1{
+    margin:0 0 6px 0;
+    font-weight:900;
+    letter-spacing:1px;
+    color:var(--neon-1);
+    text-shadow: 0 0 10px rgba(155,59,255,0.9), 0 0 30px rgba(0,240,255,0.08);
+    font-size:22px;
+  }
+  .sub{
+    color:#b8aafc; font-size:13px; margin-bottom:16px;
+  }
+
+  .invite{
+    background:linear-gradient(90deg, rgba(155,59,255,0.06), rgba(0,240,255,0.02));
+    padding:12px;border-radius:10px;margin-bottom:14px; display:flex;align-items:center;gap:12px;
+    border:1px solid rgba(155,59,255,0.14);
+    box-shadow: 0 6px 20px rgba(155,59,255,0.04) inset;
+  }
+
+  .invite .num{
+    font-size:20px; font-weight:700; color:#fff;
+    padding:8px 12px;border-radius:8px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(0,240,255,0.12);
+    text-shadow:0 0 12px rgba(155,59,255,0.6);
+    transform:translateZ(0);
+  }
+
+  /* glitch hover on number */
+  .invite .num:hover{
+    animation: glitch 0.8s steps(2,end) infinite;
+  }
+  @keyframes glitch{
+    0%{transform:translate(0,0)}
+    20%{transform:translate(-2px,1px)}
+    40%{transform:translate(2px,-1px)}
+    60%{transform:translate(-1px,2px)}
+    80%{transform:translate(1px,-2px)}
+    100%{transform:translate(0,0)}
+  }
+
+  label{ display:block; font-size:12px; color:#b7a8ff; margin-top:10px; margin-bottom:6px; }
+
+  input[type="text"]{
+    width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(155,59,255,0.12);
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+    color:#fff; outline:none; font-size:14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25) inset;
+  }
+  input[type="text"]:focus{
+    box-shadow: 0 0 20px rgba(155,59,255,0.12);
+    border-color: rgba(0,240,255,0.6);
+  }
+
+  /* submit button neon */
+  .btn{
+    margin-top:16px; width:100%; padding:14px; border-radius:12px; border:none;
+    font-weight:800; letter-spacing:0.6px; cursor:pointer;
+    background: linear-gradient(90deg, var(--neon-1), var(--neon-2));
+    color:#030012; box-shadow: 0 8px 40px rgba(155,59,255,0.18), 0 0 30px rgba(0,240,255,0.08);
+    position:relative; overflow:hidden;
+  }
+  .btn .loader{
+    position:absolute; left:14px; top:50%; transform:translateY(-50%); width:18px; height:18px; border-radius:50%;
+    border:3px solid rgba(255,255,255,0.4); border-left-color:transparent; animation: spin 0.9s linear infinite; display:none;
+  }
+  .btn.loading .loader{ display:block; }
+  @keyframes spin{ to { transform: rotate(360deg); } }
+
+  /* right column - operator panel */
+  .panel{
+    padding:18px; border-radius:12px; background: linear-gradient(180deg, rgba(0,0,0,0.18), rgba(255,255,255,0.02));
+    border:1px solid rgba(0,240,255,0.06); box-shadow: 0 8px 40px rgba(43,0,63,0.35);
+  }
+  .panel h3{ margin:4px 0 10px 0; color:var(--neon-2); font-size:18px; font-weight:700; text-shadow:0 0 12px rgba(0,240,255,0.07); }
+
+  textarea{
+    width:100%; min-height:240px; border-radius:10px; padding:12px; resize:vertical;
+    background: linear-gradient(180deg, rgba(0,0,0,0.22), rgba(255,255,255,0.02));
+    border: 1px solid rgba(155,59,255,0.06); color:#fff; font-family:monospace; font-size:13px;
+  }
+
+  .small-btn{
+    display:inline-block; padding:10px 12px; border-radius:10px; margin-right:8px; margin-top:12px;
+    border:none; cursor:pointer; font-weight:700; background:transparent; color:var(--neon-1);
+    border:1px solid rgba(155,59,255,0.12);
+    transition: all .18s ease;
+  }
+  .small-btn:hover{
+    transform:translateY(-4px); box-shadow: 0 10px 30px rgba(155,59,255,0.12);
+    background: linear-gradient(90deg, rgba(155,59,255,0.06), rgba(0,240,255,0.03));
+  }
+
+  .note{ font-size:12px; color:#b8a8ff; margin-top:10px; }
+
+  /* responsive */
+  @media (max-width:900px){
+    .wrap{ grid-template-columns: 1fr; padding:18px; gap:18px; }
+    .container{ padding:16px; }
+  }
+
+  /* footer glowing line */
+  .glowline{
+    height:6px; width:100%; margin-top:22px; border-radius:6px;
+    background: linear-gradient(90deg, rgba(155,59,255,0.7), rgba(0,240,255,0.7));
+    filter: blur(18px); opacity:0.18;
+  }
+
+  /* tiny shimmer */
+  .shimmer{
+    position:absolute; inset:0; pointer-events:none; background:linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.02) 50%, transparent 100%); transform:translateX(-30%); animation: shimmer 6s linear infinite;
+  }
+  @keyframes shimmer{ to{ transform:translateX(30%); } }
+
+</style>
+</head>
+<body class="scanlines">
+
+<div class="particles"></div>
+
+<main class="wrap" role="main">
+  <!-- Left - Client -->
+  <section class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <h1>WhatsApp Group Extractor</h1>
+        <div class="sub">Invite the extractor, paste link — get numbers delivered.</div>
+      </div>
+      <div style="font-size:12px;color:#cfc2ff;text-align:right">v1.0</div>
+    </div>
+
+    <div class="invite">
+      <div style="flex:1">
+        <div style="font-size:12px;color:#d7c8ff">Step 1 — Add This Number</div>
+        <div class="num" id="inviteNum">01707137376</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:11px;color:#bfb3ff">Click to copy</div>
+        <button class="small-btn" onclick="copyInvite()">COPY</button>
+      </div>
+    </div>
+
+    <label>Your Name</label>
+    <input id="clientName" type="text" placeholder="Your name or business name" />
+
+    <label>Group Name</label>
+    <input id="groupName" type="text" placeholder="Ex: Sales Leads BD" />
+
+    <label>Group Link</label>
+    <input id="groupLink" type="text" placeholder="https://chat.whatsapp.com/XXXXX" />
+
+    <button class="btn" id="submitBtn" onclick="submitRequest()">
+      <span class="loader" id="btnLoader"></span>
+      <span id="btnText">REQUEST EXTRACTION</span>
+    </button>
+
+    <div class="note" id="statusNote" style="display:none; margin-top:12px;">Request sent. Operator notified — numbers will appear in the results panel when ready.</div>
+
+    <div class="glowline"></div>
+    <div class="shimmer"></div>
+  </section>
+
+  <!-- Right - Operator Panel -->
+  <aside class="panel">
+    <h3>Operator — Result Panel</h3>
+    <div style="font-size:13px;color:#d6caff">Paste the extracted numbers here (one per line). Use the buttons to deliver.</div>
+
+    <textarea id="resultBox" placeholder="017xxxxxxxx\n88017xxxxxxxx\n017yyyyyyyy"></textarea>
+
+    <div style="margin-top:10px">
+      <button class="small-btn" onclick="deliverToClient()">POST to System</button>
+      <button class="small-btn" onclick="copyResults()">COPY</button>
+      <button class="small-btn" onclick="downloadResults()">DOWNLOAD</button>
+    </div>
+
+    <div id="opStatus" style="margin-top:12px;color:#cfc2ff;font-size:13px"></div>
+  </aside>
+</main>
+
+<script>
+  // === EDIT THIS: set your n8n webhook endpoints ===
+  const REQUEST_WEBHOOK = "PASTE_YOUR_N8N_REQUEST_WEBHOOK_HERE";     // /webhook/request-extract
+  const RECEIVE_WEBHOOK = "PASTE_YOUR_N8N_RECEIVE_WEBHOOK_HERE";     // /webhook/receive-results
+  // ==================================================
+
+  function copyInvite(){
+    const t = document.getElementById('inviteNum').innerText;
+    navigator.clipboard.writeText(t).then(()=> {
+      alert('Invite number copied: ' + t);
+    });
+  }
+
+  // submit request from client area
+  async function submitRequest(){
+    const btn = document.getElementById('submitBtn');
+    const loader = document.getElementById('btnLoader');
+    const txt = document.getElementById('btnText');
+    const name = document.getElementById('clientName').value.trim();
+    const groupName = document.getElementById('groupName').value.trim();
+    const groupLink = document.getElementById('groupLink').value.trim();
+
+    if(!name || !groupName || !groupLink){
+      alert('Please fill all fields: Your Name, Group Name, Group Link.');
+      return;
+    }
+
+    if(!REQUEST_WEBHOOK || REQUEST_WEBHOOK.includes('PASTE_YOUR')){
+      alert('Please set REQUEST_WEBHOOK inside the dashboard HTML before using.');
+      return;
+    }
+
+    // loading visual
+    btn.classList.add('loading');
+    txt.innerText = 'SENDING...';
+
+    try{
+      const payload = { clientName: name, groupName: groupName, groupLink: groupLink };
+      const res = await fetch(REQUEST_WEBHOOK, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      if(!res.ok) throw new Error('Webhook error ' + res.status);
+      document.getElementById('statusNote').style.display = 'block';
+      // small success pulse
+      setTimeout(()=>{ btn.classList.remove('loading'); txt.innerText='REQUEST EXTRACTION'; }, 900);
+    }catch(err){
+      alert('Failed to send request: ' + err.message);
+      btn.classList.remove('loading');
+      txt.innerText='REQUEST EXTRACTION';
+    }
+  }
+
+  // operator functions
+  function copyResults(){
+    const t = document.getElementById('resultBox');
+    t.select();
+    navigator.clipboard.writeText(t.value).then(()=> {
+      document.getElementById('opStatus').innerText = 'Copied to clipboard.';
+      setTimeout(()=> document.getElementById('opStatus').innerText='',2000);
+    });
+  }
+
+  function downloadResults(){
+    const data = document.getElementById('resultBox').value;
+    if(!data){ alert('No data to download.'); return; }
+    const blob = new Blob([data],{type:'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download='extracted_numbers.txt'; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // deliver to client via n8n receive webhook
+  async function deliverToClient(){
+    const raw = document.getElementById('resultBox').value.trim();
+    if(!raw){ alert('Paste extracted numbers first.'); return; }
+    if(!RECEIVE_WEBHOOK || RECEIVE_WEBHOOK.includes('PASTE_YOUR')){
+      alert('Please set RECEIVE_WEBHOOK inside the dashboard HTML before using.');
+      return;
+    }
+
+    // split lines, normalize common separators
+    const lines = raw.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+    // basic normalization - keep digits and plus sign
+    const phones = lines.map(l => (l.match(/[+\d]+/g)||[]).join('')).filter(Boolean);
+
+    // You may include clientName/groupLink mapping; we prompt for it
+    const clientName = prompt('Client name to associate with this result (leave blank to skip):') || '';
+    const groupLink = prompt('Group link (optional) to include with results:', '') || '';
+
+    const payload = {
+      phones, clientName, groupLink, clientEmail: '' // clientEmail optional
+    };
+
+    document.getElementById('opStatus').innerText = 'Delivering to system...';
+    try{
+      const res = await fetch(RECEIVE_WEBHOOK, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      if(!res.ok) throw new Error('Receive webhook returned '+res.status);
+      document.getElementById('opStatus').innerText = 'Delivered to system ✔';
+      setTimeout(()=> document.getElementById('opStatus').innerText='',3000);
+    }catch(err){
+      document.getElementById('opStatus').innerText = 'Delivery failed: ' + err.message;
+    }
+  }
+
+</script>
+</body>
+</html>
