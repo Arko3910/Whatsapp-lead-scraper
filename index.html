@@ -1,141 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
 <title>WhatsApp Group Extractor</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-    body {
-        margin: 0;
-        padding: 0;
-        background: #02030a;
-        font-family: Arial, sans-serif;
-        color: #fff;
-    }
+body {
+    margin: 0;
+    padding: 0;
+    background: #02030a;
+    color: #fff;
+    font-family: Arial, sans-serif;
+}
 
-    .glow {
-        text-shadow: 0 0 10px #00f0ff, 0 0 20px #00f0ff, 0 0 30px #00f0ff;
-    }
+.card {
+    max-width: 520px;
+    margin: 50px auto;
+    background: rgba(0, 15, 40, 0.7);
+    padding: 25px;
+    border-radius: 14px;
+    border: 1px solid #00eaff;
+    box-shadow: 0 0 20px #00eaff;
+    backdrop-filter: blur(5px);
+}
 
-    .container {
-        max-width: 550px;
-        margin: 80px auto;
-        padding: 20px;
-        background: rgba(0, 10, 25, 0.7);
-        border: 1px solid #0ff;
-        border-radius: 15px;
-        box-shadow: 0 0 20px #00eaff;
-        backdrop-filter: blur(10px);
-    }
+h2 {
+    text-align: center;
+    color: #00eaff;
+    text-shadow: 0 0 12px #00eaff;
+}
 
-    h2 {
-        text-align: center;
-        margin-bottom: 25px;
-        font-size: 26px;
-        font-weight: bold;
-        color: #00eaff;
-        text-shadow: 0 0 12px #0ff;
-    }
+label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 7px;
+    color: #a9d7ff;
+    font-size: 15px;
+}
 
-    label {
-        font-size: 16px;
-        margin-bottom: 8px;
-        display: block;
-        color: #a9d7ff;
-    }
+input, textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #0af;
+    background: rgba(255,255,255,0.09);
+    color: white;
+    outline: none;
+    font-size: 14px;
+}
 
-    input {
-        width: 100%;
-        padding: 12px;
-        border-radius: 8px;
-        border: none;
-        margin-bottom: 20px;
-        background: rgba(255, 255, 255, 0.08);
-        color: #fff;
-        font-size: 15px;
-        outline: none;
-        border: 1px solid rgba(0,255,255,0.5);
-    }
+input:focus {
+    box-shadow: 0 0 15px #00eaff;
+}
 
-    input:focus {
-        border-color: #00eaff;
-        box-shadow: 0 0 10px #00eaff;
-    }
+button {
+    margin-top: 20px;
+    width: 100%;
+    padding: 14px;
+    background: #00eaff;
+    color: black;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+    font-size: 17px;
+    cursor: pointer;
+    box-shadow: 0 0 20px #00eaff;
+}
 
-    button {
-        width: 100%;
-        padding: 14px;
-        font-size: 18px;
-        border-radius: 10px;
-        border: none;
-        background: #00eaff;
-        color: #000;
-        font-weight: bold;
-        cursor: pointer;
-        transition: 0.2s;
-        box-shadow: 0 0 20px #00eaff;
-    }
+button:hover {
+    background: #0ff;
+}
 
-    button:hover {
-        background: #0ff;
-        box-shadow: 0 0 30px #00eaff;
-    }
+#successBox {
+    display: none;
+    background: rgba(0,255,150,0.25);
+    border: 1px solid #00ffaa;
+    padding: 12px;
+    margin-top: 15px;
+    text-align: center;
+    border-radius: 10px;
+}
 
-    .success-box {
-        margin-top: 20px;
-        padding: 15px;
-        text-align: center;
-        border-radius: 10px;
-        font-size: 16px;
-        background: rgba(0,255,180,0.2);
-        border: 1px solid #00ffaa;
-        display: none;
-    }
+#resultSection {
+    display: none;
+    margin-top: 50px;
+}
 </style>
 
 </head>
 <body>
 
-<div class="container">
-    <h2 class="glow">WhatsApp Group Extractor</h2>
+<div class="card">
+    <h2>WhatsApp Group Extractor</h2>
 
-    <label>Your Name</label>
-    <input type="text" id="clientName" placeholder="Enter your name">
+    <p style="color:#00ffaa; font-size:16px; text-align:center;">
+        Step 1: Invite this number to your group<br>
+        <strong style="font-size:22px; color:#0ff;">01707137376</strong>
+    </p>
 
-    <label>WhatsApp Group Link</label>
-    <input type="text" id="groupLink" placeholder="Paste WhatsApp group URL">
+    <label>Client Name</label>
+    <input type="text" id="clientName" placeholder="Your name or business name">
 
-    <label>Callback URL (Optional)</label>
-    <input type="text" id="callback" placeholder="https://yourdomain.com/receive">
+    <label>Group Name</label>
+    <input type="text" id="groupName" placeholder="Ex: Business Leads Group">
 
-    <button onclick="submitForm()">Submit Request</button>
+    <label>Group Link</label>
+    <input type="text" id="groupLink" placeholder="Paste WhatsApp group link">
 
-    <div class="success-box" id="successMessage">
-        Request submitted successfully.<br>
-        Extraction system activated.
+    <button onclick="submitRequest()">Submit Extraction Request</button>
+
+    <div id="successBox">
+        Request received successfully. Extraction started.
     </div>
 </div>
 
 
-<script>
-function submitForm() {
+<div class="card" id="resultSection">
+    <h2>Extracted Numbers</h2>
 
+    <textarea id="numberList" rows="10" placeholder="Numbers will appear here"></textarea>
+
+    <button onclick="copyNumbers()">Copy Numbers</button>
+    <button onclick="downloadNumbers()">Download as TXT</button>
+</div>
+
+<script>
+function submitRequest() {
     const payload = {
         clientName: document.getElementById("clientName").value,
-        groupLink: document.getElementById("groupLink").value,
-        callback: document.getElementById("callback").value
+        groupName: document.getElementById("groupName").value,
+        groupLink: document.getElementById("groupLink").value
     };
 
     fetch("YOUR_WEBHOOK_URL", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify(payload)
     })
-    .then(res => {
-        document.getElementById("successMessage").style.display = "block";
+    .then(() => {
+        document.getElementById("successBox").style.display = "block";
     })
-    .catch(err => alert("Error: " + err));
+    .catch(error => alert("Error: " + error));
+}
+
+function copyNumbers() {
+    const text = document.getElementById("numberList");
+    text.select();
+    navigator.clipboard.writeText(text.value);
+}
+
+function downloadNumbers() {
+    const text = document.getElementById("numberList").value;
+    const blob = new Blob([text], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "extracted_numbers.txt";
+    a.click();
 }
 </script>
 
