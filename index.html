@@ -20,6 +20,12 @@
         border-radius: 16px;
         box-shadow: 0 0 25px rgba(0,0,0,0.25);
         border: 1px solid rgba(255,255,255,0.2);
+        opacity: 0;
+        animation: fadeIn 1s forwards;
+    }
+
+    @keyframes fadeIn {
+        to { opacity: 1; }
     }
 
     h1 {
@@ -27,6 +33,13 @@
         text-align: center;
         margin-bottom: 20px;
         font-weight: bold;
+        opacity: 0;
+        animation: slideDown 0.9s ease-out forwards;
+    }
+
+    @keyframes slideDown {
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
     }
 
     p {
@@ -45,6 +58,11 @@
         background: rgba(255,255,255,0.15);
         color: #fff;
         font-size: 15px;
+        transition: 0.3s;
+    }
+
+    input:focus {
+        background: rgba(255,255,255,0.25);
     }
 
     input::placeholder {
@@ -69,12 +87,18 @@
         background: #a64dff;
     }
 
+    .loading {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
     #successBox {
         margin-top: 20px;
         padding: 15px;
         border-radius: 10px;
         background: rgba(0,255,0,0.2);
         display: none;
+        animation: fadeIn 0.5s ease-in-out;
     }
 
     .operator-section {
@@ -100,8 +124,34 @@
         color: #fff;
         border: none;
         outline: none;
+        transition: 0.3s;
     }
 
+    textarea:focus {
+        background: rgba(255,255,255,0.25);
+    }
+
+    .btn-small {
+        width: 48%;
+        padding: 12px;
+        margin-top: 10px;
+        border: none;
+        background: #6a0dad;
+        color: white;
+        font-weight: bold;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .btn-small:hover {
+        background: #9152ff;
+    }
+
+    .btn-row {
+        display: flex;
+        justify-content: space-between;
+    }
 </style>
 </head>
 <body>
@@ -115,14 +165,19 @@
     <input type="text" id="groupName" placeholder="Group Name">
     <input type="text" id="groupLink" placeholder="Group Link">
 
-    <button onclick="submitForm()">Submit Request</button>
+    <button id="submitBtn" onclick="submitForm()">Submit Request</button>
 
-    <div id="successBox">Your request has been submitted. Thank you.</div>
+    <div id="successBox">Your request has been successfully submitted.</div>
 
     <div class="operator-section">
         <h2>Operator Result Panel</h2>
-        <p>Paste extracted numbers below and copy/download:</p>
+        <p>Paste extracted numbers below:</p>
         <textarea id="numbersBox" placeholder="Extracted numbers will appear here..."></textarea>
+
+        <div class="btn-row">
+            <button class="btn-small" onclick="copyNumbers()">Copy</button>
+            <button class="btn-small" onclick="downloadNumbers()">Download TXT</button>
+        </div>
     </div>
 </div>
 
@@ -131,24 +186,47 @@ function submitForm() {
     const name = document.getElementById("clientName").value;
     const group = document.getElementById("groupName").value;
     const link = document.getElementById("groupLink").value;
+    const btn = document.getElementById("submitBtn");
 
     if (!name || !group || !link) {
         alert("Please fill all fields.");
         return;
     }
 
-    // Show success animation
-    document.getElementById("successBox").style.display = "block";
+    // Loading effect
+    btn.classList.add("loading");
+    btn.textContent = "Please wait...";
 
-    // Auto-clear fields
     setTimeout(() => {
+        btn.classList.remove("loading");
+        btn.textContent = "Submit Request";
+
+        document.getElementById("successBox").style.display = "block";
+
         document.getElementById("clientName").value = "";
         document.getElementById("groupName").value = "";
         document.getElementById("groupLink").value = "";
-    }, 800);
+    }, 1500);
+}
 
-    // Here your webhook request will go
-    // fetch("YOUR_WEBHOOK_URL", { method: "POST", body: JSON.stringify({ name, group, link }) });
+function copyNumbers() {
+    const text = document.getElementById("numbersBox");
+    text.select();
+    document.execCommand("copy");
+    alert("Numbers copied to clipboard.");
+}
+
+function downloadNumbers() {
+    const data = document.getElementById("numbersBox").value;
+    const file = new Blob([data], { type: "text/plain" });
+    const url = URL.createObjectURL(file);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "extracted_numbers.txt";
+    a.click();
+
+    URL.revokeObjectURL(url);
 }
 </script>
 
