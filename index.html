@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>WhatsApp Group Number Extractor</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        margin: 0;
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(135deg, #2e004f, #4b008e, #5a00c4);
+        background-size: 180% 180%;
+        animation: gradientShift 10s ease infinite;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    @keyframes gradientShift {
+        0% { background-position: 0 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0 50%; }
+    }
+
+    .container {
+        width: 420px;
+        background: rgba(255,255,255,0.05);
+        padding: 30px;
+        border-radius: 18px;
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255,255,255,0.15);
+        box-shadow: 0 0 25px rgba(150, 0, 255, 0.4);
+        animation: fadeIn 1.2s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+        font-family: "Poppins", sans-serif;
+        text-align: center;
+        font-size: 26px;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    label {
+        font-size: 14px;
+        font-weight: 500;
+        opacity: 0.9;
+        display: block;
+        margin-top: 10px;
+    }
+
+    input {
+        width: 100%;
+        margin-top: 6px;
+        padding: 12px;
+        border-radius: 10px;
+        border: none;
+        outline: none;
+        background: rgba(255,255,255,0.12);
+        color: white;
+        font-size: 14px;
+        transition: 0.3s;
+    }
+
+    input:focus {
+        background: rgba(255,255,255,0.18);
+        box-shadow: 0 0 8px rgba(220, 140, 255, 0.9);
+    }
+
+    button {
+        width: 100%;
+        margin-top: 18px;
+        padding: 12px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(90deg, #7b00ff, #b100ff);
+        font-size: 15px;
+        font-weight: 600;
+        color: white;
+        cursor: pointer;
+        transition: 0.25s;
+        box-shadow: 0 0 14px rgba(160, 0, 255, 0.6);
+    }
+
+    button:hover {
+        transform: scale(1.03);
+        box-shadow: 0 0 20px rgba(200, 0, 255, 0.9);
+    }
+
+    #loading {
+        display: none;
+        margin-top: 15px;
+        text-align: center;
+        font-size: 14px;
+        animation: blink 1.3s infinite;
+    }
+
+    @keyframes blink {
+        0% { opacity: 0.4; }
+        50% { opacity: 1; }
+        100% { opacity: 0.4; }
+    }
+
+    #outputSection {
+        margin-top: 25px;
+        display: none;
+    }
+
+    textarea {
+        width: 100%;
+        height: 160px;
+        background: rgba(255,255,255,0.10);
+        color: white;
+        border-radius: 10px;
+        padding: 12px;
+        border: none;
+        outline: none;
+        font-size: 14px;
+        resize: none;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    .small-btn {
+        flex: 1;
+        padding: 10px;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.15);
+        border: none;
+        color: white;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 500;
+        transition: 0.3s;
+    }
+
+    .small-btn:hover {
+        background: rgba(255,255,255,0.25);
+        box-shadow: 0 0 10px rgba(255,255,255,0.4);
+    }
+</style>
+</head>
+
+<body>
+<div class="container">
+    <h2>WhatsApp Group Extractor</h2>
+
+    <label>Invite This Number First</label>
+    <input type="text" value="01707137376" readonly>
+
+    <label>Your Name</label>
+    <input type="text" id="clientName" placeholder="Enter your name">
+
+    <label>Group Name</label>
+    <input type="text" id="groupName" placeholder="Enter group name">
+
+    <label>Group Link</label>
+    <input type="text" id="groupLink" placeholder="Paste WhatsApp group link">
+
+    <button onclick="submitData()">Submit</button>
+
+    <div id="loading">Processing...</div>
+
+    <div id="outputSection">
+        <label>Extracted Numbers</label>
+        <textarea id="numbersBox"></textarea>
+
+        <div class="action-buttons">
+            <button class="small-btn" onclick="copyNumbers()">Copy</button>
+            <button class="small-btn" onclick="downloadTXT()">Download TXT</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function submitData() {
+    document.getElementById("loading").style.display = "block";
+
+    setTimeout(() => {
+        document.getElementById("loading").style.display = "none";
+
+        document.getElementById("outputSection").style.display = "block";
+
+        document.getElementById("numbersBox").value =
+        "Example extracted numbers:\n01711223344\n01899887766\n01955443322";
+    }, 1500);
+}
+
+function copyNumbers() {
+    const text = document.getElementById("numbersBox");
+    text.select();
+    navigator.clipboard.writeText(text.value);
+    alert("Copied!");
+}
+
+function downloadTXT() {
+    const text = document.getElementById("numbersBox").value;
+    const file = new Blob([text], { type: 'text/plain' });
+    const link = document.createElement("a");
+
+    link.href = URL.createObjectURL(file);
+    link.download = "numbers.txt";
+    link.click();
+}
+</script>
+
+</body>
+</html>
